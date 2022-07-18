@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "feedbot"
+version = "0.1.0"
+description = "Bot to send me news feed from my favorite sources to my telegram accounts."
+authors = ["cRyp70s <matthewwisdom11@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-telegram-bot = "^13.13"
+requests = "^2.28.1"
+feedparser = "^6.0.10"
+beautifulsoup4 = "^4.11.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
