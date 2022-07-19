@@ -37,7 +37,7 @@ def get_feeds(url: str, src: str = None) -> feed_outputs:
         with open(LAST_LATEST_FEEDS) as f:
             last = json.load(f)
     except Exception as e:
-        logger.exception(e)
+        logger.debug(e)
     try:
         tm = time.strptime(last[src])
     except KeyError:
@@ -92,7 +92,7 @@ def get_thn() -> feed_outputs:
     Gather articles from the first page of https://thehackernews.com
     """
     r = requests.get("https://thehackernews.com").text
-    b = bs4.BeautifulSoup(r)
+    b = bs4.BeautifulSoup(r, 'lxml')
     posts = b.find_all(class_="body-post")
     entries = []
     for i in posts:
