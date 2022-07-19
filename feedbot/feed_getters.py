@@ -5,28 +5,31 @@
 """
 
 import json
+import os
 import time
 import logging
 from typing import List
 
+import dotenv
 import requests
 import bs4
 import feedparser
+
 from config import LAST_LATEST_FEEDS
+
+dotenv.load_dotenv(".env")
 
 feed_outputs = List[List[str]]
 logger = logging.getLogger()
 
 
-def get_feeds(url: str, src: str = None,
-              testing: bool = False) -> feed_outputs:
+def get_feeds(url: str, src: str = None) -> feed_outputs:
     """
     Get feeds using feedparser from url.
     Notifications are appended to queue if
     specified.
     :param url: RSS feed url to get feed from.
     :param src: Source name.
-    :param testing: testing?
     """
     last = {}
     try:
@@ -58,7 +61,7 @@ def get_feeds(url: str, src: str = None,
     entries = []
     for feed_entry in feed["entries"]:
         date_published = feed_entry.get("published_parsed")
-        if not testing:
+        if not bool(int(os.getenv("TESTING"))):
             if date_published > tm:
                 # If feed is newer
                 last[src] = time.asctime(date_published)
@@ -78,8 +81,9 @@ def get_feeds(url: str, src: str = None,
                 feed_entry.get("summary"),
             ]
         )
-    with open(LAST_LATEST_FEEDS, "w") as f:
-        json.dump(last, f)
+    if not bool(int(os.getenv("TESTING"))):
+        with open(LAST_LATEST_FEEDS, "w") as f:
+            json.dump(last, f)
     return [[feed_title, feed_img], entries]
 
 
