@@ -20,5 +20,6 @@ async def main():
         logger.exception(e)
         session.rollback()
 
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())

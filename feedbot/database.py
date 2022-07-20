@@ -1,11 +1,9 @@
 from datetime import datetime
-from enum import unique
-from typing import Any
 from sqlalchemy import Column, BigInteger, Boolean, String
-from sqlalchemy import DateTime, Integer, Table, Text
+from sqlalchemy import DateTime, Integer, Table
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, backref, Query
+from sqlalchemy.orm import sessionmaker, relationship, Query
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -18,14 +16,17 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-users_feeds = Table('users_feeds', Base.metadata,
-                Column('user_id', Integer, ForeignKey('users.user_id')),
-                Column('feed_sources_id', Integer, 
-                        ForeignKey('feed_sources.id'))
-              )
+users_feeds = Table(
+    "users_feeds",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("users.user_id")),
+    Column("feed_sources_id", Integer, ForeignKey("feed_sources.id")),
+)
+
 
 def create_all():
     Base.metadata.create_all(engine)
+
 
 class BaseModel:
     @classmethod
@@ -33,24 +34,25 @@ class BaseModel:
     def query(cls) -> Query:
         return session.query(cls)
 
+
 class User(BaseModel, Base):
     __tablename__ = "users"
 
-    user_id = Column(BigInteger, primary_key=True) # Telegram user_id
-    username = Column(String) # Username or name
-    last_sent = Column(DateTime) # Last time feed was sent
+    user_id = Column(BigInteger, primary_key=True)  # Telegram user_id
+    username = Column(String)  # Username or name
+    last_sent = Column(DateTime)  # Last time feed was sent
     is_admin = Column(Boolean, default=False)
     date_registered = Column(DateTime, default=datetime.utcnow())
     daily_updates = Column(Boolean, default=False)
-    feeds = relationship('FeedSource', secondary=users_feeds, backref='users')
+    feeds = relationship("FeedSource", secondary=users_feeds, backref="users")
 
     def __repr__(self) -> str:
         return f"User: {self.user_name} - ID: {self.id}"
-    
-    
+
+
 class FeedSource(BaseModel, Base):
     __tablename__ = "feed_sources"
-    
+
     id = Column(Integer, primary_key=True)
     public = Column(Boolean, default=False)
     creator = Column(BigInteger)
@@ -59,9 +61,10 @@ class FeedSource(BaseModel, Base):
     title = Column(String(32))
     description = Column(String(250))
 
+
 class Feed(BaseModel):
     __tablename__ = "feeds"
-    
+
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, primary_key=True)
     date_checked = Column(DateTime, unique=True)

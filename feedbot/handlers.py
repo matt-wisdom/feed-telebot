@@ -1,20 +1,20 @@
 from asyncio.log import logger
-from typing import List
 from rfc3986 import is_valid_uri
 from sqlalchemy import and_, or_
 from telethon import events, TelegramClient
 
 from feedbot import messages
 from feedbot.database import FeedSource, session, User
+from feedbot.error_handlers import catch_errors
 from feedbot.utils import send_with_action, get_resp_msg, list_feeds_sources
 
-async def start_handler(event: events.NewMessage.Event,
-                         bot: TelegramClient):
+@catch_errors
+async def start_handler(event: events.NewMessage.Event, bot: TelegramClient):
     """
-        First time users should first send the /start command.
-        A user account will be created for them.
+    First time users should first send the /start command.
+    A user account will be created for them.
 
-        NOTE: The first person to connect to the bot becomes the admin
+    NOTE: The first person to connect to the bot becomes the admin
     """
     sender_tg = await event.get_sender()
     sender_id = event.sender_id
@@ -24,7 +24,7 @@ async def start_handler(event: events.NewMessage.Event,
         if not User.query.all():
             is_admin = True
             await event.respond(messages.made_admin)
-        sender = User(user_id=sender_id, username=sender_tg.username, is_admin = is_admin)
+        sender = User(user_id=sender_id, username=sender_tg.username, is_admin=is_admin)
         session.add(sender)
         session.commit()
         await event.respond(messages.welcome_new)
@@ -34,9 +34,8 @@ async def start_handler(event: events.NewMessage.Event,
 
     raise events.StopPropagation
 
-
-async def new_message_handler(event: events.NewMessage.Event,
-                              bot: TelegramClient):
+@catch_errors
+async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClient):
     try:
         data = event.text
         sender_id = event.sender_id
@@ -46,7 +45,7 @@ async def new_message_handler(event: events.NewMessage.Event,
         if data == messages.get_feeds:
             # Show available feeds
             if not sender.feeds:
-                await send_with_action(sender, messages.no_feed, bot)     
+                await send_with_action(sender, messages.no_feed, bot)
         elif data in [messages.subscribe, messages.unsubscribe]:
             # User wants to subscribe/unsubscribe from daily updates
             what = True if data == messages.subscribe else False
@@ -57,7 +56,9 @@ async def new_message_handler(event: events.NewMessage.Event,
         elif data == messages.help:
             # Help
             admin: User = User.query.filter_by(is_admin=True).first()
-            await send_with_action(sender, messages.help_msg.format(admin=admin.username), bot)
+            await send_with_action(
+                sender, messages.help_msg.format(admin=admin.username), bot
+            )
         elif data == messages.add_source:
             # Add new feed source
             async with bot.conversation(sender_id) as conv:
@@ -70,17 +71,24 @@ async def new_message_handler(event: events.NewMessage.Event,
                 is_public = False
                 if sender.is_admin:
                     public = await get_resp_msg(conv, messages.ask_fd_public)
-                    if public.lower() in ['yes', 'y']:
+                    if public.lower() in ["yes", "y"]:
                         is_public = True
-                new_source = FeedSource(creator=sender_id, url=url, title=title,
-                                        public=is_public, description=description)
+                new_source = FeedSource(
+                    creator=sender_id,
+                    url=url,
+                    title=title,
+                    public=is_public,
+                    description=description,
+                )
                 session.add(new_source)
                 session.commit()
         elif data == messages.sub_feed:
             # Subscribe to public or user provided feeds
             feed_sources = list_feeds_sources(sender, bot)
-            for feed_src in  feed_sources:
-                await bot.send_message(sender.user_id, feed_src[0], buttons=feed_src[1], parse_mode="html")
+            for feed_src in feed_sources:
+                await bot.send_message(
+                    sender.user_id, feed_src[0], buttons=feed_src[1], parse_mode="html"
+                )
             # await send_with_action(sender, messages.success.format(what=data[0]), bot)
         else:
             await send_with_action(sender, messages.invalid, bot)
@@ -88,25 +96,25 @@ async def new_message_handler(event: events.NewMessage.Event,
         logger.exception(e)
         session.rollback()
 
-async def callback_handler(event: events.NewMessage.Event,
-                           bot: TelegramClient):
+@catch_errors
+async def callback_handler(event: events.NewMessage.Event, bot: TelegramClient):
     """
-        Callbacks for inline buttons
+    Callbacks for inline buttons
     """
     try:
         sender_id = event.sender_id
         sender: User = User.query.filter_by(user_id=sender_id).first()
         if not sender:
             await bot.send_message(sender_id, messages.not_registered)
-        data = event.data.decode('utf-8')
+        data = event.data.decode("utf-8")
         if data.startswith("Subscribe:") or data.startswith("Unsubscribe:"):
             # Subscribe to a specific feed
             data = data.split(":")
             id = int(data[1])
             filter = or_(
-                        and_(FeedSource.id==id, FeedSource.public==True),
-                        and_(FeedSource.id==id, FeedSource.creator==sender.id),
-                        )
+                and_(FeedSource.id == id, FeedSource.public == True),
+                and_(FeedSource.id == id, FeedSource.creator == sender.id),
+            )
             feed = FeedSource.query.filter(filter).first()
             if not feed:
                 await send_with_action(sender, messages.invalid_data, bot)
@@ -119,5 +127,3 @@ async def callback_handler(event: events.NewMessage.Event,
     except Exception as e:
         logger.exception(e)
         session.rollback()
-    
-        

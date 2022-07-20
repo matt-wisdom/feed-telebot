@@ -15,6 +15,7 @@ def long_description():
     with codecs.open("README.md", encoding="utf-8-sig") as f:
         return f.read()
 
+
 pyproject = toml.load("pyproject.toml")
 
 

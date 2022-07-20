@@ -8,7 +8,7 @@ import os
 import time
 import logging
 from datetime import datetime as dt
-from typing import List, Dict, List
+from typing import List, Dict
 
 import dotenv
 import feedparser
@@ -18,8 +18,6 @@ from feedbot import feed_getters
 from feedbot.database import User, session, FeedSource, Feed
 
 logger = logging.getLogger()
-
-from config import LAST_LATEST_FEEDS
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 logger = logging.getLogger()
@@ -67,6 +65,7 @@ def get_feeds(url: str, src: str = None) -> List[List[str]]:
             ]
         )
     return [[feed_title, feed_img], entries]
+
 
 def parse_feed_content(feed: list) -> List[str]:
     """
@@ -116,10 +115,18 @@ def gather_feeds(user: User) -> Dict[str, List]:
                 feed[1] = parse_feed_content(feed[1])
                 if not bool(int(os.getenv("TESTING"))):
                     for fd in feed[1]:
-                        cached_feed = Feed(user_id=user.user_id, date_checked=date_str,
-                                        feed_title=feed[0][0], img_link=feed[0][1],
-                                        title=fd[0], link=fd[1], author=fd[2],
-                                        published=fd[3], summary=fd[4], src=src)
+                        cached_feed = Feed(
+                            user_id=user.user_id,
+                            date_checked=date_str,
+                            feed_title=feed[0][0],
+                            img_link=feed[0][1],
+                            title=fd[0],
+                            link=fd[1],
+                            author=fd[2],
+                            published=fd[3],
+                            summary=fd[4],
+                            src=src,
+                        )
                         session.add(cached_feed)
                 feeds_gotten[src.title] = feed
             except Exception as e:
@@ -128,10 +135,16 @@ def gather_feeds(user: User) -> Dict[str, List]:
         # Store fields
     else:
         for src in feeds_srcs:
-            feeds = Feed.query.filter(and_(Feed.src==src, Feed.user_id==user.id)).all()
-            feed = [[feeds[0].feed_title, feeds[0].img_link],
-                    [[fd.title, fd.link, fd.author, fd.published, fd.summary]
-                      for fd in feeds]]
+            feeds = Feed.query.filter(
+                and_(Feed.src == src, Feed.user_id == user.id)
+            ).all()
+            feed = [
+                [feeds[0].feed_title, feeds[0].img_link],
+                [
+                    [fd.title, fd.link, fd.author, fd.published, fd.summary]
+                    for fd in feeds
+                ],
+            ]
             feeds_gotten[src.title] = feed
     session.commit()
     return feeds_gotten
