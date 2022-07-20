@@ -1,5 +1,6 @@
-{"thecrazyprogrammer":"http://www.thecrazyprogrammer.com/feed",
-"microsoft":"https://devblogs.microsoft.com/python/feed/",
-"css-tricks":"https://css-tricks.com/feed/",
-"stackabuse":"https://stackabuse.com/rss/"
+{
+    "the crazy programmer":["http://www.thecrazyprogrammer.com/feed", "The crazy programmer blog"],
+    "microsoft":["https://devblogs.microsoft.com/python/feed/", "Microsoft Python Blog"],
+    "css-tricks":["https://css-tricks.com/feed/", "CSS Tricks"],
+    "stackabuse":["https://stackabuse.com/rss/", "Stack Abuse"]
 }

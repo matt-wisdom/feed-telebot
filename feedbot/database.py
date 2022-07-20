@@ -1,20 +1,25 @@
 from datetime import datetime
+from enum import unique
 from typing import Any
 from sqlalchemy import Column, BigInteger, Boolean, String
 from sqlalchemy import DateTime, Integer, Table, Text
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship, backref, Query
+from sqlalchemy.orm import sessionmaker, relationship, backref, Query
+from sqlalchemy.ext.hybrid import hybrid_property
+
 
 from config import DB_ENGINE
 
 
 Base = declarative_base()
 engine = create_engine(DB_ENGINE, echo=True)
-session: Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+
 
 users_feeds = Table('users_feeds', Base.metadata,
-                Column('user_id', Integer, ForeignKey('users.id')),
+                Column('user_id', Integer, ForeignKey('users.user_id')),
                 Column('feed_sources_id', Integer, 
                         ForeignKey('feed_sources.id'))
               )
@@ -22,16 +27,13 @@ users_feeds = Table('users_feeds', Base.metadata,
 def create_all():
     Base.metadata.create_all(engine)
 
-class BaseModel(Base):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-    
-    @property
+class BaseModel:
     @classmethod
+    @hybrid_property
     def query(cls) -> Query:
         return session.query(cls)
 
-class User(BaseModel):
+class User(BaseModel, Base):
     __tablename__ = "users"
 
     user_id = Column(BigInteger, primary_key=True) # Telegram user_id
@@ -46,13 +48,28 @@ class User(BaseModel):
         return f"User: {self.user_name} - ID: {self.id}"
     
     
-class FeedSource(BaseModel):
+class FeedSource(BaseModel, Base):
     __tablename__ = "feed_sources"
     
     id = Column(Integer, primary_key=True)
     public = Column(Boolean, default=False)
     creator = Column(BigInteger)
-    user = relationship("User", backref=backref('feeds', order_by=id))
+    # user = relationship("User", backref=backref('feeds', order_by=id))
     url = Column(String(255))
     title = Column(String(32))
+    description = Column(String(250))
 
+class Feed(BaseModel):
+    __tablename__ = "feeds"
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, primary_key=True)
+    date_checked = Column(DateTime, unique=True)
+    feed_title = Column(String(100))
+    img_link = Column(String(255))
+    author = Column(String(30))
+    link = Column(String(255))
+    title = Column(String(100))
+    published = Column(String(30))
+    summary = Column(String(1000))
+    src = Column(String(32))

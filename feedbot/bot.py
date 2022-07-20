@@ -1,9 +1,9 @@
+import os
 import logging
 
 import dotenv
 from telethon import TelegramClient, events
 
-import config
 from feedbot.database import session
 from feedbot.handlers import (start_handler, 
                               new_message_handler,
@@ -19,8 +19,8 @@ async def create_bot() -> TelegramClient:
     """
         Create bot and register handlers
     """
-    bot = TelegramClient('bot', 11111, 'a1b2c3d4')\
-                        .start(bot_token=config.BOT_TOKEN)
+    bot = await TelegramClient('bot', os.getenv("API_ID"), os.getenv("API_HASH"))\
+                        .start(bot_token=os.getenv("BOT_TOKEN"))
     await register_handlers(bot)
     
     return bot
@@ -31,7 +31,7 @@ async def register_handlers(bot: TelegramClient) -> None:
     """
     @bot.on(events.NewMessage)
     async def message(event):
-        await new_message_handler(event)
+        await new_message_handler(event, bot)
     
     @bot.on(events.NewMessage(pattern='/start'))
     async def start(event):
@@ -41,8 +41,3 @@ async def register_handlers(bot: TelegramClient) -> None:
     async def callback(event):
         await callback_handler(event, bot)
 
-    
-async def main():
-    pass
-
-bot = create_bot()

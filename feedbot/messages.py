@@ -1,7 +1,7 @@
 # WELCOME MESSAGES
 welcome_old = "Hello"
 welcome_new = "Hello"
-registered = "What do you want to do"
+registered = "What do you want to do? "
 
 # ACTIONS BUTTONS
 subscribe = "Subscribe to daily updates"
@@ -14,12 +14,12 @@ add_source = "Add feed source"
 # ERRORS
 invalid = "Invalid command"
 invalid_data = "Invalid input"
-not_registered = "You are not registered send the\
-                 /start command to register"
+not_registered = "You are not registered send the /start command to register"
 no_feed = "You havent subscribed to any feed"
 
 # HELP
 help_msg = """Contact @{admin} for any issues or visit"""
+made_admin = "You've been made admin"
 
 # SUB UNSUB
 # sub = "Subscribe"
@@ -29,5 +29,6 @@ help_msg = """Contact @{admin} for any issues or visit"""
 success = "{what} successful..."
 
 ask_fd_title = "Input the title of the feed: "
+ask_fd_desc = "Input a short description of the feed: "
 ask_fd_url = "Input the RSS Feed URL: "
 ask_fd_public = "Public?"
