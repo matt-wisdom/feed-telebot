@@ -1,0 +1,91 @@
+from typing import List
+from rfc3986 import is_valid_uri
+from sqlalchemy import and_, or_
+from telethon import events, TelegramClient
+
+from feedbot import messages
+from feedbot.database import FeedSource, session, User
+from feedbot.utils import send_with_action, get_resp_msg, list_feeds_sources
+
+
+async def start_handler(event: events.NewMessage.Event,
+                         bot: TelegramClient):
+    sender_tg = await event.get_sender()
+    sender_id = event.sender_id
+    sender = User.query.filter_by(id=sender_id).first()
+    if not sender:
+        sender = User(user_id=sender_id, username=sender_tg.username)
+        await event.respond(messages.welcome_new)
+    else:
+        await event.respond(messages.welcome_new)
+    await send_with_action(sender, messages.registered, bot)
+
+    raise event.StopPropagation
+
+
+async def new_message_handler(event: events.NewMessage.Event):
+    event
+
+async def callback_handler(event: events.NewMessage.Event,
+                           bot: TelegramClient):
+    sender_id = event.sender_id
+    sender: User = User.query.filter_by(id=sender_id).first()
+    if not sender:
+        await send_with_action(sender, messages.not_registered, bot)
+    data = event.data.decode('utf-8')
+    if data == messages.get_feeds:
+        # Show available feeds
+        if not sender.feeds:
+            await send_with_action(sender, messages.no_feed, bot)
+        
+    elif data in [messages.subscribe, messages.unsubscribe]:
+        # User wants to subscribe/unsubscribe from daily updates
+        what = True if data == messages.subscribe else False
+        sender.daily_updates = what
+        session.add(sender)
+        session.commit()
+        await send_with_action(sender, messages.success.format(what=data), bot)
+    elif data == messages.help:
+        # Help
+        admin: User = User.query.filter_by(is_admin=True).first()
+        await send_with_action(sender, messages.help_msg.format(admin=admin.username), bot)
+    elif data == messages.add_source:
+        # Add new feed source
+        async with bot.conversation(...) as conv:
+            title = await get_resp_msg(conv, messages.ask_fd_title)
+            url = await get_resp_msg(conv, messages.ask_fd_url)
+            if not is_valid_uri(url):
+                await send_with_action(sender, messages.invalid_data, bot)
+                return
+            is_public = False
+            if sender.is_admin:
+                public = await get_resp_msg(conv, messages.ask_fd_public)
+                if public.lower() in ['yes', 'y']:
+                    is_public = True
+            new_source = FeedSource(creator=sender_id, url=url, title=title, public=is_public)
+            session.add(new_source)
+            session.commit()
+    elif data == messages.sub_feed:
+        # Subscribe to public or user provided feeds
+        feed_sources = list_feeds_sources(sender, bot)
+        for feed_src in  feed_sources:
+            await bot.send_message(sender.user_id, feed_src[0], buttons=feed_src[1])
+    elif data.startswith("Subscribe:") or data.startswith("Unsubscribe:"):
+        # Subscribe to a specific feed
+        data = data.split(":")
+        id = int(data[1])
+        filter = or_(
+                     and_(FeedSource.id==id, FeedSource.public==True),
+                     and_(FeedSource.id==id, FeedSource.creator==sender.id),
+                     )
+        feed = FeedSource.query.filter(filter).first()
+        if not feed:
+            await send_with_action(sender, messages.invalid_data, bot)
+        sender.feeds.append(feed)
+        session.add(sender)
+        session.commit()
+        await send_with_action(sender, messages.success.format(what=data[0]), bot)
+    else:
+       await send_with_action(sender, messages.invalid, bot)
+    
+        
