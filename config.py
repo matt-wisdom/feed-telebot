@@ -3,3 +3,5 @@
 LAST_LATEST_FEEDS = "data/last_gathered.json"
 FEEDS_FILE = "data/feeds.json"
 FEED_SRC_FILE = "data/feeds_src.json"
+DB_ENGINE = "sqlite:///:memory:"
+BOT_TOKEN = ""

@@ -17,7 +17,7 @@ import feedparser
 
 from config import LAST_LATEST_FEEDS
 
-dotenv.load_dotenv(".env")
+dotenv.load_dotenv(dotenv.find_dotenv())
 
 feed_outputs = List[List[str]]
 logger = logging.getLogger()
