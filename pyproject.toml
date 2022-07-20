@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "feedbot"
 version = "0.1.0"
-description = "Bot to send me news feed from my favorite sources to my telegram accounts."
+description = "Bot to send news feed from your favorite sources to your telegram account."
 authors = ["cRyp70s <matthewwisdom11@gmail.com>"]
 license = "MIT"
+repository = ""
 
 [tool.poetry.dependencies]
 python = "^3.9"
