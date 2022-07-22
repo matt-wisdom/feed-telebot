@@ -6,9 +6,9 @@ from telethon import events, TelegramClient
 from feedbot import messages
 from feedbot.database import FeedSource, session, User
 from feedbot.error_handlers import catch_errors
-from feedbot.utils import send_with_action, get_resp_msg, list_feeds_sources
+from feedbot.utils import send_with_action, get_resp_msg, list_feeds_sources, send_feeds
 
-@catch_errors
+@catch_errors()
 async def start_handler(event: events.NewMessage.Event, bot: TelegramClient):
     """
     First time users should first send the /start command.
@@ -34,10 +34,12 @@ async def start_handler(event: events.NewMessage.Event, bot: TelegramClient):
 
     raise events.StopPropagation
 
-@catch_errors
+@catch_errors()
 async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClient):
     try:
         data = event.text
+        if data.startswith("/"):
+            return
         sender_id = event.sender_id
         sender: User = User.query.filter_by(user_id=sender_id).first()
         if not sender:
@@ -46,6 +48,7 @@ async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClien
             # Show available feeds
             if not sender.feeds:
                 await send_with_action(sender, messages.no_feed, bot)
+            await send_feeds(sender, bot)
         elif data in [messages.subscribe, messages.unsubscribe]:
             # User wants to subscribe/unsubscribe from daily updates
             what = True if data == messages.subscribe else False
@@ -91,12 +94,13 @@ async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClien
                 )
             # await send_with_action(sender, messages.success.format(what=data[0]), bot)
         else:
-            await send_with_action(sender, messages.invalid, bot)
+            pass
+            # await send_with_action(sender, messages.invalid, bot)
     except Exception as e:
         logger.exception(e)
         session.rollback()
 
-@catch_errors
+@catch_errors()
 async def callback_handler(event: events.NewMessage.Event, bot: TelegramClient):
     """
     Callbacks for inline buttons
@@ -113,12 +117,15 @@ async def callback_handler(event: events.NewMessage.Event, bot: TelegramClient):
             id = int(data[1])
             filter = or_(
                 and_(FeedSource.id == id, FeedSource.public == True),
-                and_(FeedSource.id == id, FeedSource.creator == sender.id),
+                and_(FeedSource.id == id, FeedSource.creator == sender.user_id),
             )
             feed = FeedSource.query.filter(filter).first()
             if not feed:
                 await send_with_action(sender, messages.invalid_data, bot)
-            sender.feeds.append(feed)
+            if data[0].startswith("Subscribe"):
+                sender.feeds.append(feed)
+            else:
+                sender.feeds.remove(feed)
             session.add(sender)
             session.commit()
             await send_with_action(sender, messages.success.format(what=data[0]), bot)

@@ -8,8 +8,8 @@ repository = ""
 
 [tool.poetry.dependencies]
 python = "^3.9"
-python-telegram-bot = "^13.13"
 requests = "^2.28.1"
+Telethon = "^1.24.0"
 feedparser = "^6.0.10"
 beautifulsoup4 = "^4.11.1"
 lxml = "^4.9.1"

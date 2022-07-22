@@ -97,7 +97,7 @@ def gather_feeds(user: User) -> Dict[str, List]:
     uses the stored feeds.
     """
 
-    feeds = Feed.query.filter_by(user_id=user.id).all()
+    feeds = Feed.query.filter_by(user_id=user.user_id).all()
     if bool(int(os.getenv("TESTING"))) or not feeds:
         date_obj = dt.fromtimestamp(0)
     else:
@@ -105,19 +105,19 @@ def gather_feeds(user: User) -> Dict[str, List]:
     feeds_srcs: List[FeedSource] = user.feeds
     feeds_gotten = dict()
     if dt.utcnow().date() != date_obj:
-        session.delete(User.query.filter_by(user_id=user.id))
-        date_str = dt.today().date().isoformat()
+        User.query.filter_by(user_id=user.user_id).delete()
+        date_chk = dt.today().date()
         for src in feeds_srcs:
             try:
                 feed = feed_getters.get_feeds(src.url, src.title)
                 if not feed[1]:
                     continue
-                feed[1] = parse_feed_content(feed[1])
+                # feed[1] = parse_feed_content(feed)
                 if not bool(int(os.getenv("TESTING"))):
                     for fd in feed[1]:
                         cached_feed = Feed(
                             user_id=user.user_id,
-                            date_checked=date_str,
+                            date_checked=date_chk,
                             feed_title=feed[0][0],
                             img_link=feed[0][1],
                             title=fd[0],
@@ -125,7 +125,7 @@ def gather_feeds(user: User) -> Dict[str, List]:
                             author=fd[2],
                             published=fd[3],
                             summary=fd[4],
-                            src=src,
+                            src=src.title,
                         )
                         session.add(cached_feed)
                 feeds_gotten[src.title] = feed
@@ -136,7 +136,7 @@ def gather_feeds(user: User) -> Dict[str, List]:
     else:
         for src in feeds_srcs:
             feeds = Feed.query.filter(
-                and_(Feed.src == src, Feed.user_id == user.id)
+                and_(Feed.src == src, Feed.user_id == user.user_id)
             ).all()
             feed = [
                 [feeds[0].feed_title, feeds[0].img_link],

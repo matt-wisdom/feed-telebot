@@ -8,9 +8,14 @@ import config
 
 async def main():
     try:
-        create_all()
+        # create_all()
         json_data = json.load(open(config.FEED_SRC_FILE))
         for title, (url, desc) in json_data.items():
+            if FeedSource.query.filter_by(url=url, public=True).first():
+                logger.info(f"{url} already exists in database. Not adding.")
+                continue
+            else:
+                logger.info(f"{url} does not exists in database. Adding.")
             fd_src = FeedSource(public=True, url=url, title=title, description=desc)
             session.add(fd_src)
         session.commit()

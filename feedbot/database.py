@@ -62,12 +62,12 @@ class FeedSource(BaseModel, Base):
     description = Column(String(250))
 
 
-class Feed(BaseModel):
+class Feed(BaseModel, Base):
     __tablename__ = "feeds"
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, primary_key=True)
-    date_checked = Column(DateTime, unique=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer)
+    date_checked = Column(DateTime)
     feed_title = Column(String(100))
     img_link = Column(String(255))
     author = Column(String(30))
