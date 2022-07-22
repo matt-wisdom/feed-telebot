@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -15,4 +15,8 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "feeds-telebot" #Must be unique in Heroku
           heroku_email: "matthewwisdom11@gmail.com"
-          buildpack: "https://github.com/moneymeets/python-poetry-buildpack.git"
+          env_file: ".env"
+        env:
+          BOT_TOKEN: ${{secrets.BOT_TOKEN}}
+          API_ID: ${{secrets.API_ID}}
+          API_HASH: ${{secrets.API_HASH}}
