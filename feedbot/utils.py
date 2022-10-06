@@ -70,24 +70,26 @@ async def get_resp_msg(conv: Conversation, msg: str) -> str:
     return response.text
 
 
-async def send_feeds(user: User, bot: TelegramClient):
-    feed_contents = gather_feeds(user)
-    for title, entries in feed_contents.items():
-        msg = f"<b>Feeds from {title}</b>"
-        await bot.send_message(user.user_id, message=msg, parse_mode="html")
-        for entry in entries[1]:
-            article = (
-                f"<i>Author: {entry[2]}</i>\n<i>Published: {entry[3]}</i>\n"
-                f"Link: {entry[1]}"
-            )
-            await asyncio.sleep(3)
-            try:
-                # file=entry[0][1]
-                await bot.send_message(
-                    user.user_id, message=article, parse_mode="html"
+async def send_feeds(user: User, bot: TelegramClient, only_new: bool = False):
+    feed_contents = gather_feeds(user, only_new)
+    convo = bot.conversation(user.user_id, exclusive=False)
+    async with convo:
+        for title, entries in feed_contents.items():
+            msg = f"<b>Feeds from {title}</b>"
+            await convo.send_message(message=msg, parse_mode="html")
+            for entry in entries[1]:
+                article = (
+                    f"<i>Author: {entry[2]}</i>\n<i>Published: {entry[3]}</i>\n"
+                    f"Link: {entry[1]}"
                 )
-            except Exception as e:
-                print(e)
+                await asyncio.sleep(6)
+                try:
+                    # file=entry[0][1]
+                    await convo.send_message(
+                        message=article, parse_mode="html"
+                    )
+                except Exception as e:
+                    print(e)
 
     # bot.loop.run_in_executor()
     # s3 e4

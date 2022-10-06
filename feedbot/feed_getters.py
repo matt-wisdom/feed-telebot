@@ -88,7 +88,7 @@ def parse_feed_content(feed: list) -> List[str]:
     return filtered_feeds
 
 
-def gather_feeds(user: User) -> Dict[str, List]:
+def gather_feeds(user: User, only_new: bool = False) -> Dict[str, List]:
     """
     This function check gathers feeds.
     It checks if feed sources were changed
@@ -134,17 +134,18 @@ def gather_feeds(user: User) -> Dict[str, List]:
                 logging.exception(str(e))
         # Store fields
     else:
-        for src in feeds_srcs:
-            feeds = Feed.query.filter(
-                and_(Feed.src == src, Feed.user_id == user.user_id)
-            ).all()
-            feed = [
-                [feeds[0].feed_title, feeds[0].img_link],
-                [
-                    [fd.title, fd.link, fd.author, fd.published, fd.summary]
-                    for fd in feeds
-                ],
-            ]
-            feeds_gotten[src.title] = feed
+        if not only_new:
+            for src in feeds_srcs:
+                feeds = Feed.query.filter(
+                    and_(Feed.src == src, Feed.user_id == user.user_id)
+                ).all()
+                feed = [
+                    [feeds[0].feed_title, feeds[0].img_link],
+                    [
+                        [fd.title, fd.link, fd.author, fd.published, fd.summary]
+                        for fd in feeds
+                    ],
+                ]
+                feeds_gotten[src.title] = feed
     session.commit()
     return feeds_gotten

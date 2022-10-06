@@ -18,6 +18,11 @@ async def start_handler(event: events.NewMessage.Event, bot: TelegramClient):
     """
     sender_tg = await event.get_sender()
     sender_id = event.sender_id
+    
+    async with bot.conversation(await event.get_chat(), exclusive=False) as conv:
+        await conv.cancel_all()
+        # await event.respond("Conversations cancelled.")
+
     sender = User.query.filter_by(user_id=sender_id).first()
     if not sender:
         is_admin = False
