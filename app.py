@@ -19,8 +19,12 @@ async def main():
             fd_src = FeedSource(public=True, url=url, title=title, description=desc)
             session.add(fd_src)
         session.commit()
-        bot = await create_bot()
+        bot, task = await create_bot()
         await bot.run_until_disconnected()
+
+        # Cancel task
+        task.cancel()
+        await asyncio.sleep(5)
     except Exception as e:
         logger.exception(e)
         session.rollback()
