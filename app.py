@@ -30,5 +30,6 @@ async def main():
         session.rollback()
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+def start():
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
