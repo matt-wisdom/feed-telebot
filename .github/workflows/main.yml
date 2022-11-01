@@ -7,7 +7,7 @@ on:
 
 env:
   GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GHCR_USER: ${{ secrets.GHCR_USERNAME }}
+  GHCR_USER: matt-wisdom
   BOT_TOKEN: ${{secrets.BOT_TOKEN}}
   API_ID: ${{secrets.API_ID}}
   API_HASH: ${{secrets.API_HASH}}
