@@ -10,4 +10,4 @@ WORKDIR /home
 RUN pip install poetry==1.1.14 && poetry install
 RUN echo -e "BOT_TOKEN = ${BOT_TOKEN}\nAPI_ID = ${API_ID}\nAPI_HASH = ${API_HASH}" > ".env"
 
-CMD [ "python", "./app.py" ]
+CMD [ "poetry", "run", "./app.py" ]
