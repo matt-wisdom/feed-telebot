@@ -4,7 +4,7 @@ ARG API_ID
 ARG API_HASH
 ARG BOT_TOKEN
 
-WORKDIR /home
+WORKDIR /app
 
 FROM python as poetry
 ENV POETRY_HOME=/opt/poetry
