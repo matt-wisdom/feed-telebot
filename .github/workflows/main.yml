@@ -22,15 +22,15 @@ jobs:
         run: |
           echo $GITHUB_SHA | awk '{ printf "SHORT_SHA1=%.7s\n", $1 }' >> $GITHUB_ENV
           basename $GITHUB_REF | awk '{ printf "BRANCH_NAME=%s\n", $1 }' >> $GITHUB_ENV
-      - name: Docker build
-        run: docker build --rm=false --build-arg API_ID=$API_ID --build-arg API_HASH=$API_HASH --build-arg BOT_TOKEN=$BOT_TOKEN --build-arg COMMIT_ID=$GITHUB_SHA -t ghcr.io/$GHCR_USER/feedbot:prod .
-      - name: Docker login
-        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u $GHCR_USER --password-stdin
-      - name: Docker push
-        run: docker push ghcr.io/$GHCR_USER/feedbot:prod 
-      # - name: Deploy on Koyeb
-      #   uses: koyeb-community/koyeb-actions@v2
-      #   with:
-      #     api_token: "${{ secrets.KOYEB_TOKEN }}"
+      # - name: Docker build
+      #   run: docker build --rm=false --build-arg API_ID=$API_ID --build-arg API_HASH=$API_HASH --build-arg BOT_TOKEN=$BOT_TOKEN --build-arg COMMIT_ID=$GITHUB_SHA -t ghcr.io/$GHCR_USER/feedbot:prod .
+      # - name: Docker login
+      #   run: echo "$GHCR_TOKEN" | docker login ghcr.io -u $GHCR_USER --password-stdin
+      # - name: Docker push
+      #   run: docker push ghcr.io/$GHCR_USER/feedbot:prod 
+      - name: Deploy on Koyeb
+        uses: koyeb-community/koyeb-actions@v2
+        with:
+          api_token: "${{ secrets.KOYEB_TOKEN }}"
       # - run: koyeb services redeploy ${{ secrets.KOYEB_SERVICE_ID }}
-    #  - run: koyeb app init feedbot --docker "ghcr.io/aibauchi/strapi_website_backend:prod" --ports 1337:http --routes /:1337 --docker-private-registry-secret gh-registry-credentials
+     - run: koyeb app init feedbot --docker "ghcr.io/aibauchi/strapi_website_backend:prod" --ports 1337:http --routes /:1337 --docker-private-registry-secret Github_SEcret
