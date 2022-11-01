@@ -33,4 +33,4 @@ jobs:
         with:
           api_token: "${{ secrets.KOYEB_TOKEN }}"
       # - run: koyeb services redeploy ${{ secrets.KOYEB_SERVICE_ID }}
-        - run: koyeb app init feedbot --docker "ghcr.io/$GHCR_USER/feedbot:prod" --ports 1337:http --routes /:8080 --docker-private-registry-secret Github_SEcret
+      - run: koyeb app init feedbot --docker "ghcr.io/$GHCR_USER/feedbot:prod" --ports 1337:http --routes /:8080 --docker-private-registry-secret Github_SEcret
