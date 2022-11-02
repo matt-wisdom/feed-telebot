@@ -4,15 +4,12 @@ import logging
 from random import randrange
 from typing import List, Tuple
 
-import dotenv
 import async_timeout
 from telethon import TelegramClient, events
 
 from feedbot.handlers import start_handler, new_message_handler, callback_handler
 from feedbot.database import User
 from feedbot.utils import send_feeds
-
-dotenv.load_dotenv(dotenv.find_dotenv())
 
 logging.basicConfig(
     format="[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s", level=logging.WARNING
