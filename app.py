@@ -8,7 +8,7 @@ import config
 
 async def main():
     try:
-        # create_all()
+        create_all()
         json_data = json.load(open(config.FEED_SRC_FILE))
         for title, (url, desc) in json_data.items():
             if FeedSource.query.filter_by(url=url, public=True).first():
