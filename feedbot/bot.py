@@ -1,14 +1,15 @@
 import asyncio
-import os
 import logging
+import os
 from random import randrange
 from typing import List, Tuple
 
 import async_timeout
 from telethon import TelegramClient, events
 
-from feedbot.handlers import start_handler, new_message_handler, callback_handler
 from feedbot.database import User
+from feedbot.handlers import (callback_handler, new_message_handler,
+                              start_handler)
 from feedbot.utils import send_feeds
 
 logging.basicConfig(

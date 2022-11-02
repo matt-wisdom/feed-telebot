@@ -1,13 +1,14 @@
 import asyncio
-import os
-from aiohttp import web
-import httpx
-from asyncio.log import logger
 import json
-import asyncio
-from feedbot.database import create_all, FeedSource, session
-from feedbot.bot import create_bot
+import os
+from asyncio.log import logger
+
+import httpx
+from aiohttp import web
+
 import config
+from feedbot.bot import create_bot
+from feedbot.database import FeedSource, create_all, session
 
 
 async def main():

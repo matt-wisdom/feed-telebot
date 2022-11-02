@@ -1,14 +1,12 @@
 from datetime import datetime
-from sqlalchemy import Column, BigInteger, Boolean, String
-from sqlalchemy import DateTime, Integer, Table
-from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, Query
-from sqlalchemy.ext.hybrid import hybrid_property
 
+from sqlalchemy import (BigInteger, Boolean, Column, DateTime, ForeignKey,
+                        Integer, String, Table, create_engine)
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Query, relationship, sessionmaker
 
 from config import DB_ENGINE
-
 
 Base = declarative_base()
 engine = create_engine(DB_ENGINE)

@@ -4,17 +4,17 @@
     Each entry should be like: [title, link, author, dt, summary].
 """
 
+import logging
 import os
 import time
-import logging
 from datetime import datetime as dt
-from typing import List, Dict
+from typing import Dict, List
 
 import feedparser
 from sqlalchemy import and_
 
 from feedbot import feed_getters
-from feedbot.database import User, session, FeedSource, Feed
+from feedbot.database import Feed, FeedSource, User, session
 
 logger = logging.getLogger()
 

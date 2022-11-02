@@ -6,9 +6,9 @@ from telethon import TelegramClient
 from telethon.tl.custom import Button, Conversation
 
 from feedbot import messages
-from feedbot.database import User, FeedSource
-from feedbot.feed_getters import gather_feeds
+from feedbot.database import FeedSource, User
 from feedbot.error_handlers import catch_errors
+from feedbot.feed_getters import gather_feeds
 
 
 def get_action_buttons(sender: User) -> List[List[Button]]:
