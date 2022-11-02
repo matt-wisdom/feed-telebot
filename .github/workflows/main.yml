@@ -23,7 +23,7 @@ jobs:
           echo $GITHUB_SHA | awk '{ printf "SHORT_SHA1=%.7s\n", $1 }' >> $GITHUB_ENV
           basename $GITHUB_REF | awk '{ printf "BRANCH_NAME=%s\n", $1 }' >> $GITHUB_ENV
       - name: Docker build
-        run: docker build --rm=false --build-arg API_ID=$API_ID --build-arg API_HASH=$API_HASH --build-arg BOT_TOKEN=$BOT_TOKEN --build-arg COMMIT_ID=$GITHUB_SHA -t ghcr.io/$GHCR_USER/feedbot:prod .
+        run: docker build --rm=false -e API_ID=$API_ID -e API_HASH=$API_HASH -e BOT_TOKEN=$BOT_TOKEN --build-arg COMMIT_ID=$GITHUB_SHA -t ghcr.io/$GHCR_USER/feedbot:prod .
       - name: Docker login
         run: echo "$GHCR_TOKEN" | docker login ghcr.io -u $GHCR_USER --password-stdin
       - name: Docker push
