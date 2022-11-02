@@ -10,7 +10,6 @@ import logging
 from datetime import datetime as dt
 from typing import List, Dict
 
-import dotenv
 import feedparser
 from sqlalchemy import and_
 
@@ -19,7 +18,6 @@ from feedbot.database import User, session, FeedSource, Feed
 
 logger = logging.getLogger()
 
-dotenv.load_dotenv(dotenv.find_dotenv())
 logger = logging.getLogger()
 
 
