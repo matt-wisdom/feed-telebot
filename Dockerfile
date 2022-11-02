@@ -21,7 +21,7 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install
 
 COPY . /app
-RUN echo -e "BOT_TOKEN = ${BOT_TOKEN}\nAPI_ID = ${API_ID}\nAPI_HASH = ${API_HASH}" > ".env"
+RUN echo -e "BOT_TOKEN = $BOT_TOKEN\nAPI_ID = $API_ID\nAPI_HASH = $API_HASH" > ".env"
 
 EXPOSE 8080
 CMD [ "poetry", "run", "python", "app.py" ]
