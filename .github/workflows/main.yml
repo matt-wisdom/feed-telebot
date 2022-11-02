@@ -11,6 +11,8 @@ env:
   BOT_TOKEN: ${{secrets.BOT_TOKEN}}
   API_ID: ${{secrets.API_ID}}
   API_HASH: ${{secrets.API_HASH}}
+  BACKUP_URL: ${{secrets.BACKUP_URL}}
+  BACKUP_KEY: ${{secrets.BACKUP_KEY}}
 
 jobs:
   build-push:
