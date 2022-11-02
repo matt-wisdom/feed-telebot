@@ -27,6 +27,6 @@ RUN poetry install
 COPY . /app
 RUN echo -e "BOT_TOKEN = $BOT_TOKEN\nAPI_ID = $API_ID\nAPI_HASH = $API_HASH" > ".env"
 
-EXPOSE 8080
+# EXPOSE 8080
 # RUN ["cat",]
 CMD [ "poetry", "run", "python", "app.py" ]
