@@ -15,6 +15,7 @@ beautifulsoup4 = "^4.11.1"
 lxml = "^4.9.1"
 SQLAlchemy = "^1.4.36"
 python-dotenv = "^0.21.0"
+async-timeout = "^4.0.2"
 
 
 [tool.poetry.dev-dependencies]
