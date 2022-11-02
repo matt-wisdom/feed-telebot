@@ -230,11 +230,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-<<<<<<< HEAD
 content-hash = "4ae019c35ec564119be4a90c7095ded34136b095e5cc6837a31c461615277966"
-=======
-content-hash = "9b1ec65dd91a8b719253d8a2862750d02915ab0743d5b446879ef0f84cd24616"
->>>>>>> e72fd8587d642d48f4b542a096d272fd3291ca5a
 
 [metadata.files]
 async-timeout = [
