@@ -1,3 +1,7 @@
+import asyncio
+import os
+from aiohttp import web
+import httpx
 from asyncio.log import logger
 import json
 import asyncio
@@ -30,6 +34,27 @@ async def main():
         session.rollback()
 
 
+async def server():
+    async def backup(request):
+        async with httpx.AsyncClient() as client:
+            r = await client.post(
+                os.getenv("BACKUP_URL"),
+                headers={"Authorization": f"Bearer {os.getenv('BACKUP_KEY')}"},
+                files={"file": open("data.db", "rb")},
+            )
+            if r.status_code != 200:
+                return web.Response(text=f"Error {r.status_code}")
+        return web.Response(text="Running")
+    
+    async def status(request):
+        return web.Response(text="Running")
+
+
+    asyncio.create_task(main())
+    app = web.Application()
+    app.add_routes([web.get("/", status), web.get("/backup", backup)])
+    return app
+
+
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(main())
+    web.run_app(server())

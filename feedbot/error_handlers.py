@@ -3,10 +3,12 @@ import functools
 from asyncio.log import logger
 from telethon import errors
 
+
 def catch_errors():
     """
-        Catch and handle errors if any.
+    Catch and handle errors if any.
     """
+
     def _inner_catch(func):
         async def _innest_catch(*args, **kwargs):
             try:
@@ -17,5 +19,7 @@ def catch_errors():
                 await asyncio.sleep(e.seconds)
             except Exception as e:
                 logger.exception(e)
+
         return _innest_catch
+
     return _inner_catch

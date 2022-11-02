@@ -10,6 +10,7 @@ from feedbot.database import User, FeedSource
 from feedbot.feed_getters import gather_feeds
 from feedbot.error_handlers import catch_errors
 
+
 def get_action_buttons(sender: User) -> List[List[Button]]:
     """
     Get buttons for main bot actions
@@ -17,11 +18,16 @@ def get_action_buttons(sender: User) -> List[List[Button]]:
     :param sender: sender's data
     """
     registered_buttons = [
-        [Button.text(messages.get_feeds), Button.text(messages.subscribe), Button.text(messages.unsubscribe)],
+        [
+            Button.text(messages.get_feeds),
+            Button.text(messages.subscribe),
+            Button.text(messages.unsubscribe),
+        ],
         [Button.text(messages.help), Button.text(messages.add_source)],
         [Button.text(messages.sub_feed)],
     ]
     return registered_buttons
+
 
 @catch_errors()
 async def send_with_action(sender: User, message: str, bot: TelegramClient):
@@ -66,7 +72,7 @@ def list_feeds_sources(user: User, bot: TelegramClient) -> List[List]:
 @catch_errors()
 async def get_resp_msg(conv: Conversation, msg: str) -> str:
     await conv.send_message(msg)
-    response = await conv.get_response(timeout=60*60)
+    response = await conv.get_response(timeout=60 * 60)
     return response.text
 
 
@@ -85,9 +91,7 @@ async def send_feeds(user: User, bot: TelegramClient, only_new: bool = False):
                 await asyncio.sleep(6)
                 try:
                     # file=entry[0][1]
-                    await convo.send_message(
-                        message=article, parse_mode="html"
-                    )
+                    await convo.send_message(message=article, parse_mode="html")
                 except Exception as e:
                     print(e)
 

@@ -8,6 +8,7 @@ from feedbot.database import FeedSource, session, User
 from feedbot.error_handlers import catch_errors
 from feedbot.utils import send_with_action, get_resp_msg, list_feeds_sources, send_feeds
 
+
 @catch_errors()
 async def start_handler(event: events.NewMessage.Event, bot: TelegramClient):
     """
@@ -18,7 +19,7 @@ async def start_handler(event: events.NewMessage.Event, bot: TelegramClient):
     """
     sender_tg = await event.get_sender()
     sender_id = event.sender_id
-    
+
     async with bot.conversation(await event.get_chat(), exclusive=False) as conv:
         await conv.cancel_all()
         # await event.respond("Conversations cancelled.")
@@ -38,6 +39,7 @@ async def start_handler(event: events.NewMessage.Event, bot: TelegramClient):
     await send_with_action(sender, messages.registered, bot)
 
     raise events.StopPropagation
+
 
 @catch_errors()
 async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClient):
@@ -104,6 +106,7 @@ async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClien
     except Exception as e:
         logger.exception(e)
         session.rollback()
+
 
 @catch_errors()
 async def callback_handler(event: events.NewMessage.Event, bot: TelegramClient):

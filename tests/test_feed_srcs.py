@@ -22,4 +22,3 @@ def test_get_feeds():
     # Feed results
     if len(feed[1]) > 0:
         assert len(feed[1][0]) == 5
-
