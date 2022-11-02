@@ -11,7 +11,7 @@ from config import DB_ENGINE
 
 
 Base = declarative_base()
-engine = create_engine(DB_ENGINE, echo=True)
+engine = create_engine(DB_ENGINE)
 Session = sessionmaker(bind=engine)
 session = Session()
 
