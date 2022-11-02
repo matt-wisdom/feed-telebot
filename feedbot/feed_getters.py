@@ -96,7 +96,7 @@ def gather_feeds(user: User, only_new: bool = False) -> Dict[str, List]:
     """
 
     feeds = Feed.query.filter_by(user_id=user.user_id).all()
-    if bool(int(os.getenv("TESTING"))) or not feeds:
+    if bool(int(os.getenv("TESTING", 0))) or not feeds:
         date_obj = dt.fromtimestamp(0)
     else:
         date_obj = feeds[0].date_checked
@@ -111,7 +111,7 @@ def gather_feeds(user: User, only_new: bool = False) -> Dict[str, List]:
                 if not feed[1]:
                     continue
                 # feed[1] = parse_feed_content(feed)
-                if not bool(int(os.getenv("TESTING"))):
+                if not bool(int(os.getenv("TESTING", 0))):
                     for fd in feed[1]:
                         cached_feed = Feed(
                             user_id=user.user_id,
