@@ -32,4 +32,4 @@ jobs:
         uses: koyeb-community/koyeb-actions@v2
         with:
           api_token: "${{ secrets.KOYEB_TOKEN }}"
-      - run: koyeb services redeploy ${{ secrets.KOYEB_SERVICE_ID }}
+      - run: koyeb service redeploy feedbot/feedbot
