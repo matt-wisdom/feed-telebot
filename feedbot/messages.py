@@ -18,7 +18,7 @@ not_registered = "You are not registered send the /start command to register"
 no_feed = "You havent subscribed to any feed"
 
 # HELP
-help_msg = """Contact @{admin} for any issues or visit"""
+help_msg = """Contact {admin} for any issues or visit"""
 made_admin = "You've been made admin"
 
 # SUB UNSUB

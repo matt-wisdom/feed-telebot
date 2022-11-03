@@ -3,6 +3,7 @@ from asyncio.log import logger
 from rfc3986 import is_valid_uri
 from sqlalchemy import and_, or_
 from telethon import TelegramClient, events
+from config import ADMIN_CONTACT
 
 from feedbot import messages
 from feedbot.database import FeedSource, User, session
@@ -67,9 +68,8 @@ async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClien
             await send_with_action(sender, messages.success.format(what=data), bot)
         elif data == messages.help:
             # Help
-            admin: User = User.query.filter_by(is_admin=True).first()
             await send_with_action(
-                sender, messages.help_msg.format(admin=admin.username), bot
+                sender, messages.help_msg.format(admin=ADMIN_CONTACT), bot
             )
         elif data == messages.add_source:
             # Add new feed source
