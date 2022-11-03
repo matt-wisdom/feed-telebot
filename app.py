@@ -13,7 +13,6 @@ from feedbot.database import FeedSource, create_all, session
 
 async def main():
     try:
-        create_all()
         json_data = json.load(open(config.FEED_SRC_FILE))
         for title, (url, desc) in json_data.items():
             if FeedSource.query.filter_by(url=url, public=True).first():
@@ -50,6 +49,16 @@ async def server():
     async def status(request):
         return web.Response(text="Running")
 
+    # Load backup if exists
+    async with httpx.AsyncClient() as client:
+        r = await client.get(
+            os.getenv("BACKUP_URL"),
+            headers={"Authorization": f"Bearer {os.getenv('BACKUP_KEY')}"},
+        )
+        if r.status_code != 200:
+            create_all()
+        with open("dev.db", "wb") as file:
+            file.write(r.content)
 
     asyncio.create_task(main())
     app = web.Application()
