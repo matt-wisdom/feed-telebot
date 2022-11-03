@@ -41,7 +41,7 @@ async def server():
             r = await client.post(
                 os.getenv("BACKUP_URL"),
                 headers={"Authorization": f"Bearer {os.getenv('BACKUP_KEY')}"},
-                files={"file": open("data.db", "rb")},
+                files={"file": open("dev.db", "rb")},
             )
             if r.status_code != 200:
                 return web.Response(text=f"Error {r.status_code}")
