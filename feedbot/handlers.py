@@ -58,7 +58,7 @@ async def new_message_handler(event: events.NewMessage.Event, bot: TelegramClien
             # Show available feeds
             if not sender.feeds:
                 await send_with_action(sender, messages.no_feed, bot)
-            await send_feeds(sender, bot)
+            await send_feeds(sender, bot, only_new=True)
         elif data in [messages.subscribe, messages.unsubscribe]:
             # User wants to subscribe/unsubscribe from daily updates
             what = True if data == messages.subscribe else False
