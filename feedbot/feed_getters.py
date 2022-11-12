@@ -54,13 +54,14 @@ def get_feeds(url: str, src: str = None) -> List[List[str]]:
             logger.debug(feed_entry.get("published_parsed"))
             entry_published = ""
         entries.append(
-            [
-                feed_entry.get("title"),
-                feed_entry.get("link"),
-                feed_entry.get("author"),
-                entry_published,
-                feed_entry.get("summary"),
-            ]
+            {
+                "title": feed_entry.get("title"),
+                "link": feed_entry.get("link"),
+                "author": feed_entry.get("author"),
+                "published": entry_published,
+                "published_parsed": feed_entry.get("published_parsed"),
+                "summary": feed_entry.get("summary"),
+            }
         )
     return [[feed_title, feed_img], entries]
 
@@ -99,11 +100,11 @@ def gather_feeds(user: User, only_new: bool = False) -> Dict[str, List]:
     if bool(int(os.getenv("TESTING", 0))) or not feeds:
         date_obj = dt.fromtimestamp(0)
     else:
-        date_obj = feeds[0].date_checked
+        date_obj = feeds[-1].date_checked
     feeds_srcs: List[FeedSource] = user.feeds
     feeds_gotten = dict()
     if dt.utcnow().date() != date_obj:
-        User.query.filter_by(user_id=user.user_id).delete()
+        # User.query.filter_by(user_id=user.user_id).delete()
         date_chk = dt.today().date()
         for src in feeds_srcs:
             try:
@@ -113,16 +114,18 @@ def gather_feeds(user: User, only_new: bool = False) -> Dict[str, List]:
                 # feed[1] = parse_feed_content(feed)
                 if not bool(int(os.getenv("TESTING", 0))):
                     for fd in feed[1]:
+                        if Feed.query.filter_by(link=fd["link"]).first():
+                            continue
                         cached_feed = Feed(
                             user_id=user.user_id,
                             date_checked=date_chk,
                             feed_title=feed[0][0],
                             img_link=feed[0][1],
-                            title=fd[0],
-                            link=fd[1],
-                            author=fd[2],
-                            published=fd[3],
-                            summary=fd[4],
+                            title=fd["title"],
+                            link=fd["link"],
+                            author=fd["author"],
+                            published=fd["published"],
+                            summary=fd["summary"],
                             src=src.title,
                         )
                         session.add(cached_feed)
